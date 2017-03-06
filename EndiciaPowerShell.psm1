@@ -24,7 +24,8 @@
   </soap:Body>
 </soap:Envelope>
 "@
-    Invoke-WebRequest -Uri https://labelserver.endicia.com/LabelService/EwsLabelService.asmx -Method Post -ContentType "text/xml; charset=utf-8" -Body $xmlstring -Headers @{SOAPAction = "www.envmgr.com/LabelService/GetAccountStatus"}
+    $Response = Invoke-EndiciaAPIFunction -XMLString $xmlstring -SOAPActionName GetAccountStatus
+    $Response.GetAccountStatusResponse.AccountStatusResponse
 }
 
 function Get-ChallengeQuestion{
@@ -49,8 +50,9 @@ function Get-ChallengeQuestion{
     </GetChallengeQuestion>
   </soap:Body>
 </soap:Envelope>
-"@
-    Invoke-WebRequest -Uri https://labelserver.endicia.com/LabelService/EwsLabelService.asmx -Method Post -ContentType "text/xml; charset=utf-8" -Body $xmlstring -Headers @{SOAPAction = "www.envmgr.com/LabelService/GetChallengeQuestion"}
+"@    
+    $Response = Invoke-EndiciaAPIFunction -XMLString $xmlstring -SOAPActionName GetChallengeQuestion
+    $Response.GetChallengeQuestionResponse.ChallengeQuestionResponse.Question
 }
 
 function Reset-SuspendedAccountRequestXML{
@@ -77,5 +79,17 @@ $xmlstring = @"
   </soap:Body>
 </soap:Envelope>
 "@
-    Invoke-WebRequest -Uri https://labelserver.endicia.com/LabelService/EwsLabelService.asmx -Method Post -ContentType "text/xml; charset=utf-8" -Body $xmlstring -Headers @{SOAPAction = "www.envmgr.com/LabelService/ResetSuspendedAccount"}
+    $Response = Invoke-EndiciaAPIFunction -XMLString $xmlstring -SOAPActionName ResetSuspendedAccount
+    $Response.ResetSuspendedAccountResponse.ResetSuspendedAccountRequestResponse
+}
+
+function Invoke-EndiciaAPIFunction {
+    param (
+        $XMLString,
+        $SOAPActionName
+    )
+
+    $Response = Invoke-WebRequest -Uri https://labelserver.endicia.com/LabelService/EwsLabelService.asmx -Method Post -ContentType "text/xml; charset=utf-8" -Body $xmlstring -Headers @{SOAPAction = "www.envmgr.com/LabelService/$FunctionName"}
+    $ResponseXML = [xml]$Response.Content
+    $ResponseXML.Envelope.Body
 }
