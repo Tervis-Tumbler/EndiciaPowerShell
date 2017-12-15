@@ -89,7 +89,7 @@ function Invoke-EndiciaAPIFunction {
         $SOAPActionName
     )
 
-    $Response = Invoke-WebRequest -Uri https://labelserver.endicia.com/LabelService/EwsLabelService.asmx -Method Post -ContentType "text/xml; charset=utf-8" -Body $xmlstring -Headers @{SOAPAction = "www.envmgr.com/LabelService/$FunctionName"}
+    $Response = Invoke-WebRequest -Uri https://labelserver.endicia.com/LabelService/EwsLabelService.asmx -Method Post -ContentType "text/xml; charset=utf-8" -Body $xmlstring -Headers @{SOAPAction = "www.envmgr.com/LabelService/$SOAPActionName"}
     $ResponseXML = [xml]$Response.Content
     $ResponseXML.Envelope.Body
 }
